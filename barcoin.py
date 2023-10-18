@@ -8,21 +8,25 @@ import datetime as date
 class Block:
 
     # creates an instance of the Block class
-    def __init__(self, index, timestamp, data, previous_hash):
+    def __init__(self, index, timestamp, data, previous_hash, nonce=0):
         self.index = index
         self.timestamp = timestamp
         self.data = data
         self.previous_hash = previous_hash
+        self.nonce = nonce
         self.hash = self.hash_block()
 
-    # creates the hash_block function
+    # creates the hash_block function. The function uses double SHA-256 Hashing
+    # similar to Bitcoin
     def hash_block(self):
-        sha = hasher.sha256()
-        sha.update((str(self.index) +
+        block_string = (str(self.index) +
                    str(self.timestamp) +
                    str(self.data) +
-                   str(self.previous_hash)).encode())
-        return sha.hexdigest()
+                   str(self.previous_hash) +
+                   str(self.nonce))
+        first_hash = hasher.sha256(block_string.encode()).digest()
+        second_hash = hasher.sha256(first_hash).hexdigest()
+        return second_hash
     
 
 # creates the genesis or first block
